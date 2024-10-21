@@ -6,7 +6,7 @@ class OrderConfirmationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Order Confirmed'),
+        title: Text('Order Confirmed',style: Theme.of(context).textTheme.headlineLarge,),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Padding(

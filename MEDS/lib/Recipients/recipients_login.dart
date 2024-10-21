@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/Recipients/Recipients_Home_page.dart';
+import 'package:my_first_app/Recipients/recipients_signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // Import DonorSignUpPage to access stored donor data
 
@@ -44,7 +45,7 @@ class _RecipientLoginPageState extends State<RecipientLoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Recipient Login Page"),
+        title: Text("Recipient Login Page",style: Theme.of(context).textTheme.headlineLarge),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Padding(
@@ -71,7 +72,9 @@ class _RecipientLoginPageState extends State<RecipientLoginPage> {
             ),
             SizedBox(height: 30),
             ElevatedButton(
-              onPressed: _login,
+              // onPressed: _login,
+                            onPressed: _login,
+
               child: Text('Login'),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
@@ -84,8 +87,10 @@ class _RecipientLoginPageState extends State<RecipientLoginPage> {
                 Text("Not a member? "),
                 GestureDetector(
                   onTap: () {
-                    // Navigate to RecipientSignUpPage
-                  },
+ Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RecipientSignUpPage()),
+                    );                  },
                   child: Text(
                     'Sign Up',
                     style: TextStyle(

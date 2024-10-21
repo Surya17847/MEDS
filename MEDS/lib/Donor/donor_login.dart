@@ -41,6 +41,7 @@ class _DonorLoginPageState extends State<DonorLoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Donor Login Page", style: Theme.of(context).textTheme.headlineLarge),
+        
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Padding(
@@ -68,6 +69,7 @@ class _DonorLoginPageState extends State<DonorLoginPage> {
             SizedBox(height: 30),
             ElevatedButton(
               onPressed: _login,
+            
               child: Text('Login'),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),

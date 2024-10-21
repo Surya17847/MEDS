@@ -155,6 +155,7 @@ class _NGOSignUpPageState extends State<NGOSignUpPage> {
               // Image upload section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                
                 children: [
                   Text('Upload NGO Certificate/ID'),
                   ElevatedButton(

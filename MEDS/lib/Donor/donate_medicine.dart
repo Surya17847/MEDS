@@ -171,7 +171,7 @@ class donation_Confirmation_page extends StatelessWidget{
               ElevatedButton(
                 onPressed: (){
                   Navigator.push(context, MaterialPageRoute(builder: (context)=>DonorOptionsPage()));
-                }, child: Text("Go to Home"))
+                }, child: Text("Back"))
             ],
           ),
         ),

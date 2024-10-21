@@ -155,67 +155,54 @@ class _EntryTypeSelectionState extends State<EntryTypeSelection> {
               SizedBox(height: 20),
 
               // Conditional display of Login/Signup buttons
-              if (showProceedButtons) ...[
-                // Login/Signup buttons for selected type
-                if (selectedType == "Donor") ...[
-                  ElevatedButton(
-                    child: Text("Login as Donor"),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => DonorLoginPage()), // Replace with your login page
-                      );
-                    },
-                  ),
-                  ElevatedButton(
-                    child: Text("Signup as Donor"),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => DonorSignUpPage()), // Replace with your signup page
-                      );
-                    },
-                  ),
-                ] else if (selectedType == "NGO") ...[
-                  ElevatedButton(
-                    child: Text("Login as NGO"),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => NGOLoginPage()), // Replace with your login page
-                      );
-                    },
-                  ),
-                  ElevatedButton(
-                    child: Text("Signup as NGO"),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => NGOSignUpPage()), // Replace with your signup page
-                      );
-                    },
-                  ),
-                ] else if (selectedType == "Recipients") ...[
-                  ElevatedButton(
-                    child: Text("Login as Recipients"),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => RecipientLoginPage()), // Replace with your login page
-                      );
-                    },
-                  ),
-                  ElevatedButton(
-                    child: Text("Signup as Recipient"),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => RecipientSignUpPage()), // Replace with your signup page
-                      );
-                    },
-                  ),
-                ],
-              ],
+             if (showProceedButtons)
+                Column(
+                  children: [
+                    ElevatedButton(
+                      child: Text("Login"),
+                      onPressed: () {
+                        if (selectedType == "Donor") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => DonorLoginPage()),
+                          );
+                        } else if (selectedType == "Recipients") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => RecipientLoginPage()),
+                          );
+                        } else if (selectedType == "NGO") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => NGOLoginPage()),
+                          );
+                        }
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    ElevatedButton(
+                      child: Text("SignUp"),
+                      onPressed: () {
+                        if (selectedType == "Donor") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => DonorSignUpPage()),
+                          );
+                        } else if (selectedType == "Recipients") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => RecipientSignUpPage()),
+                          );
+                        } else if (selectedType == "NGO") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => NGOSignUpPage()),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
               SizedBox(height: 20),
 
               // Biometric toggle

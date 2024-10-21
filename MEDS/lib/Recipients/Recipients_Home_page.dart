@@ -11,7 +11,7 @@ class RecipientsHomePage extends StatelessWidget {
         appBar: AppBar(
           title: Text('Recipients Home Page',style: Theme.of(context).textTheme.headlineLarge,),
           //  leading: null,
-
+          automaticallyImplyLeading: false, 
           backgroundColor: Theme.of(context).colorScheme.primary,
           actions: [
           IconButton(

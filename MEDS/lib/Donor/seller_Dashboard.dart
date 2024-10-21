@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:my_first_app/Donor/sell_medicines.dart';
 
@@ -11,8 +10,7 @@ class seller_Dashboard extends StatelessWidget {
       'quantityAvailable': 10,
       'expiryDate': '2025-12-01',
       'manufacturer': 'ABC Pharmaceuticals',
-      // 'conditionTreated': 'Fever',
-        'image': 'Paracetamol.jpeg',
+      'image': 'Paracetamol.jpeg',
     },
     {
       'name': 'Ibuprofen',
@@ -21,8 +19,7 @@ class seller_Dashboard extends StatelessWidget {
       'quantityAvailable': 15,
       'expiryDate': '2024-06-15',
       'manufacturer': 'XYZ Pharmaceuticals',
-      // 'conditionTreated': 'Pain Relief',
-       'image': 'Ibuprofen.jpeg',
+      'image': 'Ibuprofen.jpeg',
     },
     // Add more medicines here
   ];
@@ -31,57 +28,10 @@ class seller_Dashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hi!,User',style: Theme.of(context).textTheme.headlineLarge,),
+        title: Text('Hi!, User', style: Theme.of(context).textTheme.headlineLarge),
         backgroundColor: Theme.of(context).colorScheme.primary,
-        //  leading: Builder(
-        //   builder: (context) => IconButton(
-        //     icon: Icon(Icons.menu), // Hamburger icon
-        //     onPressed: () {
-        //       Scaffold.of(context).openDrawer(); // Opens the drawer
-        //     },
-        //   ),
-        // ),
-       
-        
       ),
-      //   drawer: Drawer(
-      //   child: ListView(
-      //     padding: EdgeInsets.all(8),
-      //     children: <Widget>[
-      //       DrawerHeader(
-      //         decoration: BoxDecoration(
-      //           color: Colors.blue,
-      //         ),
-      //         child: Text(
-      //           'Menu',
-      //           style: TextStyle(
-      //             color: Colors.white,
-      //             fontSize: 24,
-      //           ),
-      //         ),
-      //       ),
-      //       ListTile(
-      //         leading: Icon(Icons.local_hospital),
-      //         title: Text('Sell Medicine'),
-      //         onTap: () {
-      //                           Navigator.of(context).pop();
-
-      //           Navigator.push(context, MaterialPageRoute(builder: (context)=>SellMedicinePage()));
-      //         },
-      //       ),
-      //       ListTile(
-      //         leading: Icon(Icons.share),
-      //         title: Text('Share'),
-      //         onTap: () {
-      //           // Navigator.of(context).pop();
-      //           // Navigator.push(context, MaterialPageRoute(builder: (context)=>DonateMedicinePage()));
-      //         },
-      //       ),
-      //     ],
-      //   ),
-      // ),
       body: Column(
-        
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -95,8 +45,42 @@ class seller_Dashboard extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: medicines.length,
+              itemCount: medicines.length + 1, // One extra for the icon button
               itemBuilder: (context, index) {
+                if (index == medicines.length) {
+                  // This is the icon below the list
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                    child: Column(
+                      children: [
+                        Center(
+                          child:  FloatingActionButton(
+                                onPressed: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>SellMedicinePage()));
+                                },
+                                child: Icon(Icons.add), // Plus icon
+                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                
+                              ),
+                            
+                            
+                        ),
+                         Text(
+                    "Need to add new medicines to your list?",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "Simply tap the '+' button to quickly add and manage your medicine stock. Ensure that you regularly update expired medicines.",
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                      ],
+                    ),
+                    
+
+                  );
+                }
                 final medicine = medicines[index];
                 return Card(
                   margin: EdgeInsets.all(10),
@@ -105,12 +89,12 @@ class seller_Dashboard extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                         Image.asset(
+                        Image.asset(
                           'assets/images/${medicine["image"]}',
                           width: 50,
                           height: 50,
                         ),
-                        SizedBox(width:10 ),
+                        SizedBox(width: 10),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,12 +108,9 @@ class seller_Dashboard extends StatelessWidget {
                               ),
                               Text('Manufacturer: ${medicine['manufacturer']}'),
                               Text('Expiry Date: ${medicine['expiryDate']}'),
-                             
-                          
                             ],
                           ),
                         ),
-                       
                       ],
                     ),
                   ),
@@ -137,14 +118,6 @@ class seller_Dashboard extends StatelessWidget {
               },
             ),
           ),
-          FloatingActionButton(
-        onPressed: () {
-                   Navigator.push(context, MaterialPageRoute(builder: (context)=>SellMedicinePage()));
-
-        },
-        child: Icon(Icons.add), // Plus icon
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
         ],
       ),
     );

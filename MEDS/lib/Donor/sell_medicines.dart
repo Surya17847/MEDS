@@ -19,7 +19,7 @@ class _SellMedicinePageState extends State<SellMedicinePage> {
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _remainingQuantityController = TextEditingController();
   final TextEditingController _predictedPriceController = TextEditingController();
-final List<String> medicines = [
+  final List<String> medicines = [
     "Ibuprofen", "Metformin", "Simvastatin", "Captopril", "Enalapril", "Omeprazole",
     "Lisinopril", "Atorvastatin", "Losartan", "Doxazosin", "Furosemide", "Veramil",
     "Nifedipine", "Cetirizine", "Amlodipine", "Loratin", "Pantoprazole", "Paracetamol",
@@ -64,6 +64,10 @@ final List<String> medicines = [
     _priceController.dispose();
     _predictedPriceController.dispose();
     _dateController.dispose();
+    _medicineNameController.dispose();
+    _compositionMgController.dispose();
+    _quantityController.dispose();
+    _remainingQuantityController.dispose();
     super.dispose();
   }
 
@@ -80,16 +84,17 @@ final List<String> medicines = [
   // Fetch predicted price based on the inputs
   Future<void> _fetchPredictedPrice() async {
     if (
-        _medicineNameController.text.isEmpty ||
+    _medicineNameController.text.isEmpty ||
         _compositionMgController.text.isEmpty ||
         _quantityController.text.isEmpty ||
         _remainingQuantityController.text.isEmpty ||
-         _priceController.text.isEmpty) {
+        _priceController.text.isEmpty ||
+        _dateController.text.isEmpty) {
       return;
     }
 
     final response = await http.post(
-      Uri.parse('http://192.168.1.15:5000/predict'), // Replace with your Flask server IP
+      Uri.parse('http://192.168.0.107:5000/predict'), // Replace with your Flask server IP
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -99,6 +104,7 @@ final List<String> medicines = [
         'quantity': int.tryParse(_quantityController.text) ?? 0,
         'price': double.tryParse(_priceController.text) ?? 0,
         'remaining_quantity': int.tryParse(_remainingQuantityController.text) ?? 0,
+        'expiry_date': _dateController.text,
       }),
     );
 
@@ -228,9 +234,9 @@ final List<String> medicines = [
                 child: Medicine_Image == null
                     ? Center(child: Text('No image selected'))
                     : Image.file(
-                        File(Medicine_Image!), // Display the selected image
-                        fit: BoxFit.cover,
-                      ),
+                  File(Medicine_Image!), // Display the selected image
+                  fit: BoxFit.cover,
+                ),
               ),
               SizedBox(height: 10),
               ElevatedButton(

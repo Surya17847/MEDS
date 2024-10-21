@@ -11,6 +11,8 @@ class NGODashboardPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('NGO Dashboard',style: Theme.of(context).textTheme.headlineLarge,),
+                  automaticallyImplyLeading: false, 
+
  backgroundColor: Theme.of(context).colorScheme.primary,
   actions: [
           IconButton(

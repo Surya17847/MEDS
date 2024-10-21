@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:my_first_app/Recipients/Buyer_Home_page.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 class ConfirmOrderPage_Buyer extends StatefulWidget {
@@ -107,7 +108,10 @@ razorpay.open(options);
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
   // Do something when payment succeeds
   Fluttertoast.showToast(msg:"Payement Success!!");
-}
+   Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => Buyer_Home_page()),
+    );}
 
 void _handlePaymentError(PaymentFailureResponse response) {
   // Do something when payment fails
