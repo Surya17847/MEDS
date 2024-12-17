@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'donor_signup.dart';
 import 'donor_after_login.dart';
 
@@ -11,7 +14,49 @@ class DonorLoginPage extends StatefulWidget {
 class _DonorLoginPageState extends State<DonorLoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  // Function to sign in with Google
+  Future<void> _googleSignInMethod() async {
+    try {
+      GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser != null) {
+        GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+        OAuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+        if (userCredential.user != null) {
+          var querySnapshot = await FirebaseFirestore.instance
+              .collection("Donors_Users")
+              .where("Email_Id", isEqualTo: googleUser.email)
+              .get();
+
+          if (querySnapshot.docs.isNotEmpty) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => DonorOptionsPage()),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Email not found in our records. Please sign up first.')),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Google Sign-In failed: $e')),
+      );
+    }
+  }
+
+  // Function to login using email and password
   Future<void> _login() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -20,18 +65,38 @@ class _DonorLoginPageState extends State<DonorLoginPage> {
       return;
     }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? storedEmail = prefs.getString('email');
-    String? storedPassword = prefs.getString('password');
+    try {
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection("Donors_Users")
+          .where("Email_Id", isEqualTo: emailController.text)
+          .get();
 
-    if (storedEmail == emailController.text && storedPassword == passwordController.text) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => DonorOptionsPage()),
-      );
-    } else {
+      if (querySnapshot.docs.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Email incorrect. Please try again.')),
+        );
+        return;
+      }
+
+      var donorDoc = querySnapshot.docs.first;
+      String storedPassword = donorDoc["Password"];
+
+      if (storedPassword == passwordController.text) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('email', emailController.text);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => DonorOptionsPage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Password incorrect. Please try again.')),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Invalid email or password. Please try again or sign up.')),
+        SnackBar(content: Text('An error occurred. Please try again later.')),
       );
     }
   }
@@ -41,7 +106,6 @@ class _DonorLoginPageState extends State<DonorLoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Donor Login Page", style: Theme.of(context).textTheme.headlineLarge),
-        
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Padding(
@@ -69,9 +133,25 @@ class _DonorLoginPageState extends State<DonorLoginPage> {
             SizedBox(height: 30),
             ElevatedButton(
               onPressed: _login,
-            
-            
               child: Text('Login'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _googleSignInMethod,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/google.png',
+                    height: 24,
+                  ),
+                  SizedBox(width: 10),
+                  Text('Log in with Google'),
+                ],
+              ),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
               ),

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "422559931539",
+    "project_id": "meds-438812",
+    "storage_bucket": "meds-438812.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:422559931539:android:387882d66f80da9b4a8166",
+        "android_client_info": {
+          "package_name": "com.example.my_first_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "422559931539-fajdu1i836pb2g8s3tf5v52vn2skbh7n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.my_first_app",
+            "certificate_hash": "1ea1ef54565d05e414019984cb43067d58759844"
+          }
+        },
+        {
+          "client_id": "422559931539-h6ui9jiutc2q0inc8u06c9m30nhm02us.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADb-FZMnXSf19ZG1XjSYlXorauGhNX2jI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "422559931539-h6ui9jiutc2q0inc8u06c9m30nhm02us.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

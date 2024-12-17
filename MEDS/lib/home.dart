@@ -8,6 +8,7 @@ import 'package:my_first_app/Recipients/recipients_signup.dart';
 import 'NGO/NGO_login.dart';
 import 'NGO/ngo_signup.dart';
 import 'Recipients/recipients_login.dart';
+import 'package:my_first_app/phoneOTP.dart'; // Import the PhoneAuth screen
 
 class EntryTypeSelection extends StatefulWidget {
   @override
@@ -155,7 +156,7 @@ class _EntryTypeSelectionState extends State<EntryTypeSelection> {
               SizedBox(height: 20),
 
               // Conditional display of Login/Signup buttons
-             if (showProceedButtons)
+              if (showProceedButtons)
                 Column(
                   children: [
                     ElevatedButton(
@@ -203,7 +204,28 @@ class _EntryTypeSelectionState extends State<EntryTypeSelection> {
                     ),
                   ],
                 ),
-              SizedBox(height: 20),
+              SizedBox(height: 7),
+
+              // Mobile authentication option
+              ElevatedButton(
+                child: Text("Proceed with Mobile Authentication"),
+                onPressed: () {
+                  if (selectedType != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PhoneAuth(
+                          selectedType: selectedType!, // Pass the selected type here
+                        ),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Please select an entry type")),
+                    );
+                  }
+                },
+              ),
 
               // Biometric toggle
               Row(

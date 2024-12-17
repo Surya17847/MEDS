@@ -1,5 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -19,9 +22,9 @@ class _NGOSignUpPageState extends State<NGOSignUpPage> {
   final TextEditingController passwordController = TextEditingController();
 
   File? _image; // To store the selected image file
+  bool _isUploading = false;
 
   Future<void> _signup() async {
-    // Check if any field is empty
     if (ngoNameController.text.isEmpty ||
         regNumberController.text.isEmpty ||
         contactPersonController.text.isEmpty ||
@@ -30,37 +33,71 @@ class _NGOSignUpPageState extends State<NGOSignUpPage> {
         addressController.text.isEmpty ||
         usernameController.text.isEmpty ||
         passwordController.text.isEmpty ||
-        _image == null) { // Check if image is selected
+        _image == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill in all fields and upload an image.')),
+        SnackBar(content: Text('Please fill all fields and upload an image.')),
       );
       return;
     }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isUploading = true; // Show loading indicator
+    });
 
-    await prefs.setString('ngo_name', ngoNameController.text);
-    await prefs.setString('reg_number', regNumberController.text);
-    await prefs.setString('contact_person', contactPersonController.text);
-    await prefs.setString('contact_number', contactNumberController.text);
-    await prefs.setString('email', emailController.text);
-    await prefs.setString('address', addressController.text);
-    await prefs.setString('username', usernameController.text);
-    await prefs.setString('password', passwordController.text);
+    try {
+      // Upload image to Firebase Storage
+      String imageURL = await _uploadImageToFirebase();
 
-    // Save the image path (for simplicity; in production, consider storing it securely)
-    await prefs.setString('ngo_image', _image!.path);
+      // Save NGO data to Firestore
+      await FirebaseFirestore.instance
+          .collection('NGO_Users')
+          .doc(emailController.text) // Use email as the document ID
+          .set({
+        'NGO_Name': ngoNameController.text,
+        'Registration_Number': regNumberController.text,
+        'Contact_Person': contactPersonController.text,
+        'Contact_Number': contactNumberController.text,
+        'Email': emailController.text,
+        'Address': addressController.text,
+        'Username': usernameController.text,
+        'Password': passwordController.text,
+        'NGO_Image_URL': imageURL,
+      });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Signup successful! You can now login.')),
-    );
+      // Save credentials locally in SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('ngo_email', emailController.text);
+      await prefs.setString('ngo_password', passwordController.text);
 
-    Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Signup successful!')),
+      );
+
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() {
+        _isUploading = false; // Hide loading indicator
+      });
+    }
+  }
+
+  // Function to upload image to Firebase Storage
+  Future<String> _uploadImageToFirebase() async {
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child('ngo_certificates/${emailController.text}.jpg');
+    await storageRef.putFile(_image!); // Upload the image file
+    return await storageRef.getDownloadURL(); // Get the download URL
   }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery); // Use pickImage instead of getImage
+    final XFile? pickedFile =
+    await picker.pickImage(source: ImageSource.gallery);
 
     setState(() {
       if (pickedFile != null) {
@@ -73,89 +110,33 @@ class _NGOSignUpPageState extends State<NGOSignUpPage> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("NGO Signup", style: Theme.of(context).textTheme.headlineLarge),
+        title: Text("NGO Signup"),
       ),
-      body: Padding(
+      body: _isUploading
+          ? Center(child: CircularProgressIndicator()) // Show loader when uploading
+          : Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              TextField(
-                controller: ngoNameController,
-                decoration: InputDecoration(
-                  labelText: 'NGO Name',
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              _buildTextField(ngoNameController, "NGO Name"),
+              _buildTextField(regNumberController, "Registration Number"),
+              _buildTextField(contactPersonController, "Contact Person"),
+              _buildTextField(contactNumberController, "Contact Number",
+                  inputType: TextInputType.phone),
+              _buildTextField(emailController, "Email",
+                  inputType: TextInputType.emailAddress),
+              _buildTextField(addressController, "Address"),
+              _buildTextField(usernameController, "Username"),
+              _buildTextField(passwordController, "Password",
+                  obscureText: true),
               SizedBox(height: 20),
-              TextField(
-                controller: regNumberController,
-                decoration: InputDecoration(
-                  labelText: 'Registration Number',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: contactPersonController,
-                decoration: InputDecoration(
-                  labelText: 'Contact Person',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: contactNumberController,
-                decoration: InputDecoration(
-                  labelText: 'Contact Number',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.phone,
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: addressController,
-                decoration: InputDecoration(
-                  labelText: 'Address',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: usernameController,
-                decoration: InputDecoration(
-                  labelText: 'Username',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-              ),
-              SizedBox(height: 20),
-              // Image upload section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                
                 children: [
                   Text('Upload NGO Certificate/ID'),
                   ElevatedButton(
@@ -165,20 +146,39 @@ class _NGOSignUpPageState extends State<NGOSignUpPage> {
                 ],
               ),
               SizedBox(height: 10),
-              // Show selected image (if any)
               if (_image != null) Image.file(_image!, height: 100),
               SizedBox(height: 30),
               ElevatedButton(
                 onPressed: _signup,
                 child: Text('Signup'),
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 50, vertical: 20),
                 ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  // Widget to build text fields
+  Widget _buildTextField(TextEditingController controller, String label,
+      {TextInputType inputType = TextInputType.text, bool obscureText = false}) {
+    return Column(
+      children: [
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: label,
+            border: OutlineInputBorder(),
+          ),
+          keyboardType: inputType,
+          obscureText: obscureText,
+        ),
+        SizedBox(height: 20),
+      ],
     );
   }
 }
